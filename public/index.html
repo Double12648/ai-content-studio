@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 内容工作室 — 线下商家内容生成平台</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <div class="navbar-brand">
+        <span class="brand-icon">✍️</span>
+        <span class="brand-text">AI 内容工作室</span>
+        <span class="brand-badge">Beta</span>
+      </div>
+      <div class="navbar-right">
+        <div class="api-status" id="apiStatus">
+          <span class="status-dot"></span>
+          <span class="status-text">检查中...</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="app-layout">
+    <!-- 左侧：商家信息面板 -->
+    <aside class="panel panel-left" id="panelLeft">
+      <div class="panel-header">
+        <h2>商家信息</h2>
+        <div class="panel-actions">
+          <select id="shopSelect" class="shop-select">
+            <option value="">+ 新建商家</option>
+          </select>
+          <button class="btn-icon" id="btnDeleteShop" title="删除商家" style="display:none">🗑</button>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <!-- 地图搜索 -->
+        <div class="section search-section">
+          <label class="section-label">搜索店铺</label>
+          <div class="search-container">
+            <div class="search-wrapper" id="searchWrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="shopSearch" class="search-input" placeholder="输入店铺名称，自动搜索..." autocomplete="off">
+              <div class="search-loading" id="searchLoading" style="display:none"></div>
+            </div>
+            <div class="search-dropdown" id="searchDropdown" style="display:none"></div>
+          </div>
+          <div class="search-hint">
+            <span class="search-hint-icon">📍</span>
+            <span>输入店名搜索后自动填充地址等信息</span>
+          </div>
+        </div>
+
+        <!-- 分割线 -->
+        <div class="divider"></div>
+
+        <!-- 行业选择 -->
+        <div class="section">
+          <label class="section-label">行业</label>
+          <div class="industry-grid" id="industryGrid">
+            <button class="industry-btn active" data-value="restaurant">
+              <span class="industry-icon">🍜</span>
+              <span class="industry-name">餐饮</span>
+            </button>
+            <button class="industry-btn" data-value="beauty">
+              <span class="industry-icon">💅</span>
+              <span class="industry-name">美业</span>
+            </button>
+            <button class="industry-btn" data-value="education">
+              <span class="industry-icon">📚</span>
+              <span class="industry-name">教培</span>
+            </button>
+            <button class="industry-btn" data-value="entertainment">
+              <span class="industry-icon">🎮</span>
+              <span class="industry-name">娱乐</span>
+            </button>
+            <button class="industry-btn" data-value="fitness">
+              <span class="industry-icon">💪</span>
+              <span class="industry-name">健身</span>
+            </button>
+            <button class="industry-btn" data-value="retail">
+              <span class="industry-icon">🛍</span>
+              <span class="industry-name">零售</span>
+            </button>
+          </div>
+          <input type="hidden" id="industry" value="restaurant">
+        </div>
+
+        <!-- 细分类型 -->
+        <div class="section">
+          <label class="section-label">细分类型</label>
+          <select id="subType" class="input-select"></select>
+        </div>
+
+        <!-- 店铺名称 -->
+        <div class="section">
+          <label class="section-label">店铺名称 <span class="required">*</span></label>
+          <input type="text" id="shopName" class="input-text" placeholder="搜索选择或手动输入">
+        </div>
+
+        <!-- 地址 & 电话 -->
+        <div class="section">
+          <label class="section-label">地址</label>
+          <input type="text" id="address" class="input-text" placeholder="搜索自动填充或手动输入">
+        </div>
+        <div class="section-row">
+          <div class="section">
+            <label class="section-label">电话</label>
+            <input type="text" id="phone" class="input-text" placeholder="搜索自动填充">
+          </div>
+          <div class="section">
+            <label class="section-label">人均消费</label>
+            <input type="text" id="avgPrice" class="input-text" placeholder="自动计算">
+          </div>
+        </div>
+
+        <!-- 卖点 & 特色 -->
+        <div class="section">
+          <label class="section-label">核心卖点</label>
+          <input type="text" id="sellingPoints" class="input-text" placeholder="如：食材新鲜、秘制配方">
+        </div>
+        <div class="section">
+          <label class="section-label">特色产品</label>
+          <input type="text" id="specials" class="input-text" placeholder="如：招牌烤鱼、手切牛肉">
+        </div>
+
+        <!-- 分割线 -->
+        <div class="divider"></div>
+
+        <!-- 菜品管理 -->
+        <div class="section">
+          <label class="section-label">
+            菜品/产品
+            <span class="count-badge" id="menuCountBadge" style="display:none">0</span>
+          </label>
+          <div class="add-item-row">
+            <input type="text" id="newItemCategory" class="input-text input-sm" placeholder="分类" list="categoryList" style="width:70px">
+            <datalist id="categoryList">
+              <option value="锅底"><option value="荤菜"><option value="素菜"><option value="小吃"><option value="饮品"><option value="主食">
+              <option value="项目"><option value="课程"><option value="商品">
+            </datalist>
+            <input type="text" id="newItemName" class="input-text input-sm" placeholder="名称" style="flex:1">
+            <input type="number" id="newItemPrice" class="input-text input-sm" placeholder="价格" style="width:65px" min="0">
+            <button class="btn-add" id="btnAddItem">+</button>
+          </div>
+          <div class="menu-list" id="menuList"></div>
+          <div class="menu-footer" id="menuFooter" style="display:none">
+            <span class="menu-avg">人均约 <strong id="menuAvgPrice">0</strong> 元</span>
+            <button class="btn-text-sm btn-danger" id="btnClearMenu">清空</button>
+          </div>
+        </div>
+
+        <!-- 文件导入 -->
+        <details class="import-details">
+          <summary>📁 文件导入</summary>
+          <div class="import-dropzone" id="dropzone">
+            <p>拖拽或点击选择</p>
+            <p class="dropzone-hint">JSON / CSV</p>
+            <input type="file" id="fileInput" accept=".json,.csv" hidden>
+          </div>
+        </details>
+      </div>
+    </aside>
+
+    <!-- 中间：生成控制 -->
+    <main class="panel panel-main">
+      <div class="panel-header">
+        <h2>内容生成</h2>
+        <div class="panel-actions">
+          <label class="toggle-inline">
+            <input type="checkbox" id="demoMode" checked>
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span class="toggle-text">演示模式</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <!-- 内容类型选择 -->
+        <div class="content-type-grid">
+          <label class="content-type-card">
+            <input type="checkbox" name="type" value="xiaohongshu" checked>
+            <div class="type-icon">📕</div>
+            <div class="type-name">小红书图文</div>
+            <div class="type-desc">种草笔记</div>
+          </label>
+          <label class="content-type-card">
+            <input type="checkbox" name="type" value="douyin" checked>
+            <div class="type-icon">🎵</div>
+            <div class="type-name">抖音脚本</div>
+            <div class="type-desc">视频分镜</div>
+          </label>
+          <label class="content-type-card">
+            <input type="checkbox" name="type" value="poster" checked>
+            <div class="type-icon">🖼</div>
+            <div class="type-name">海报文案</div>
+            <div class="type-desc">设计指导</div>
+          </label>
+          <label class="content-type-card">
+            <input type="checkbox" name="type" value="tuangou" checked>
+            <div class="type-icon">💰</div>
+            <div class="type-name">团购方案</div>
+            <div class="type-desc">套餐定价</div>
+          </label>
+        </div>
+
+        <!-- 生成按钮 -->
+        <button class="btn-generate" id="btnGenerate">
+          <span class="btn-text">✨ 开始生成全套内容</span>
+          <span class="btn-loading" style="display:none">
+            <span class="spinner"></span> AI 创作中...
+          </span>
+        </button>
+
+        <!-- 提示信息 -->
+        <div class="tips" id="tips">
+          <p>💡 填写菜品数据后，团购价格会基于实际价格自动计算，不会出现"AI幻觉"</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- 右侧：结果展示 -->
+    <aside class="panel panel-right" id="panelRight">
+      <!-- 空状态 -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-illustration">
+          <div class="empty-circle">
+            <span>🎨</span>
+          </div>
+        </div>
+        <h3>准备就绪</h3>
+        <p>填写商家信息，点击生成按钮</p>
+      </div>
+
+      <!-- 加载状态 -->
+      <div class="loading-state" id="loadingState" style="display:none">
+        <div class="loading-animation">
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+        </div>
+        <h3>正在为「<span id="loadingShopName"></span>」创作</h3>
+        <p id="loadingProgress">AI 正在思考...</p>
+      </div>
+
+      <!-- 结果区域 -->
+      <div class="results-container" id="resultsContainer" style="display:none">
+        <!-- 结果标签页 -->
+        <div class="result-tabs" id="resultTabs">
+          <button class="result-tab active" data-type="xiaohongshu">📕 小红书</button>
+          <button class="result-tab" data-type="douyin">🎵 抖音</button>
+          <button class="result-tab" data-type="poster">🖼 海报</button>
+          <button class="result-tab" data-type="tuangou">💰 团购</button>
+        </div>
+
+        <!-- 小红书结果 -->
+        <div class="result-panel active" id="panelXiaohongshu">
+          <div class="result-toolbar">
+            <button class="btn-tool btn-regenerate" data-type="xiaohongshu">🔄 重新生成</button>
+            <button class="btn-tool btn-copy" data-target="xiaohongshu">📋 复制</button>
+            <button class="btn-tool btn-download" data-target="xiaohongshu">📥 下载</button>
+          </div>
+          <div class="result-content">
+            <div class="result-field"><label>标题</label><div class="editable-field" data-key="title"><span class="editable-display" id="xhsTitle"></span><input type="text" class="editable-input" style="display:none"><span class="edit-hint">点击编辑</span></div></div>
+            <div class="result-field"><label>正文</label><div class="editable-field" data-key="content"><div class="editable-display content-text" id="xhsContent"></div><textarea class="editable-textarea" style="display:none"></textarea><span class="edit-hint">点击编辑</span></div></div>
+            <div class="result-field"><label>标签</label><div class="tags" id="xhsTags"></div></div>
+            <div class="result-field"><label>封面文案</label><div class="cover-texts" id="xhsCoverTexts"></div></div>
+          </div>
+        </div>
+
+        <!-- 抖音结果 -->
+        <div class="result-panel" id="panelDouyin">
+          <div class="result-toolbar">
+            <button class="btn-tool btn-regenerate" data-type="douyin">🔄 重新生成</button>
+            <button class="btn-tool btn-copy" data-target="douyin">📋 复制</button>
+            <button class="btn-tool btn-download" data-target="douyin">📥 下载</button>
+          </div>
+          <div class="result-content">
+            <div class="result-field"><label>标题</label><div class="editable-field" data-key="title"><span class="editable-display" id="dyTitle"></span><input type="text" class="editable-input" style="display:none"><span class="edit-hint">点击编辑</span></div></div>
+            <div class="result-field"><label>开头钩子</label><div class="editable-field" data-key="hook"><div class="editable-display highlight" id="dyHook"></div><textarea class="editable-textarea" style="display:none"></textarea><span class="edit-hint">点击编辑</span></div></div>
+            <div class="result-field"><label>分镜脚本</label><div class="scenes-list" id="dyScenes"></div></div>
+            <div class="result-field"><label>行动号召</label><div class="editable-field" data-key="cta"><span class="editable-display" id="dyCta"></span><input type="text" class="editable-input" style="display:none"><span class="edit-hint">点击编辑</span></div></div>
+            <div class="result-field"><label>配乐</label><div class="editable-field" data-key="music"><span class="editable-display" id="dyMusic"></span><input type="text" class="editable-input" style="display:none"><span class="edit-hint">点击编辑</span></div></div>
+          </div>
+        </div>
+
+        <!-- 海报结果 -->
+        <div class="result-panel" id="panelPoster">
+          <div class="result-toolbar">
+            <button class="btn-tool btn-regenerate" data-type="poster">🔄 重新生成</button>
+            <button class="btn-tool btn-copy" data-target="poster">📋 复制</button>
+            <button class="btn-tool btn-download" data-target="poster">📥 下载</button>
+          </div>
+          <div class="result-content">
+            <div class="result-field"><label>主标题</label><div class="editable-field" data-key="main_title"><span class="editable-display large" id="posterMainTitle"></span><input type="text" class="editable-input" style="display:none"><span class="edit-hint">点击编辑</span></div></div>
+            <div class="result-field"><label>副标题</label><div class="editable-field" data-key="subtitle"><span class="editable-display" id="posterSubtitle"></span><input type="text" class="editable-input" style="display:none"><span class="edit-hint">点击编辑</span></div></div>
+            <div class="result-field"><label>促销信息</label><div class="editable-field" data-key="promo"><div class="editable-display highlight" id="posterPromo"></div><textarea class="editable-textarea" style="display:none"></textarea><span class="edit-hint">点击编辑</span></div></div>
+            <div class="result-field"><label>详细信息</label><div class="details-list" id="posterDetails"></div></div>
+          </div>
+        </div>
+
+        <!-- 团购结果 -->
+        <div class="result-panel" id="panelTuangou">
+          <div class="result-toolbar">
+            <button class="btn-tool btn-regenerate" data-type="tuangou">🔄 重新生成</button>
+            <button class="btn-tool btn-copy" data-target="tuangou">📋 复制</button>
+            <button class="btn-tool btn-download" data-target="tuangou">📥 下载</button>
+          </div>
+          <div class="result-content">
+            <div class="packages" id="tgPackages"></div>
+            <div class="result-field" id="tgTipsField" style="display:none">
+              <label>推广建议</label>
+              <div class="editable-field" data-key="promotion_tips"><div class="editable-display" id="tgTips"></div><textarea class="editable-textarea" style="display:none"></textarea><span class="edit-hint">点击编辑</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

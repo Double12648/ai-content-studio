@@ -1,0 +1,27 @@
+{
+  "name": "ai-content-studio",
+  "version": "1.0.0",
+  "description": "AI 内容工作室 — 一人公司自动化内容创作工具",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "demo": "node src/index.js --demo",
+    "server": "node src/server.js",
+    "web": "node src/server.js",
+    "test": "node scripts/demo.js"
+  },
+  "keywords": ["ai", "content", "xiaohongshu", "douyin", "automation"],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "inquirer": "^9.3.8",
+    "marked": "^18.0.4",
+    "openai": "^6.39.0",
+    "ora": "^5.4.1",
+    "terminal-kit": "^3.1.2"
+  }
+}
