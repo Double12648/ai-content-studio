@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: ai-content-studio
+    runtime: node
+    repo: https://github.com/Double12648/ai-content-studio
+    plan: free
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_BASE_URL
+        value: https://api.deepseek.com/v1
+      - key: OPENAI_MODEL
+        value: deepseek-chat
+      - key: OPENAI_IMAGE_MODEL
+        value: none
+      - key: AMAP_KEY
+        sync: false
+      - key: WEBHOOK_TOKEN
+        sync: false
